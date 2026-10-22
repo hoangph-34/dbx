@@ -1580,16 +1580,19 @@ fn run_command_through_user_shell(command: &str, args: &[&str]) -> Result<Comman
     Ok(output)
 }
 
-#[cfg(unix)]
+#[cfg(not(windows))]
 fn run_user_shell_command(shell: &str, args: &[String]) -> Result<CommandOutput, String> {
-    use std::os::unix::process::CommandExt;
-
     let mut command = dbx_core::process::new_std_command(shell);
     command.args(args);
-    // Interactive shells can use /dev/tty even when stdin is piped. Give the
-    // probe its own session so terminal job control cannot suspend the app.
-    unsafe {
-        command.pre_exec(|| if libc::setsid() == -1 { Err(std::io::Error::last_os_error()) } else { Ok(()) });
+    #[cfg(target_os = "linux")]
+    {
+        use std::os::unix::process::CommandExt;
+
+        // Interactive shells can use /dev/tty even when stdin is piped. Give
+        // Linux probes their own session so they cannot suspend the app.
+        unsafe {
+            command.pre_exec(|| if libc::setsid() == -1 { Err(std::io::Error::last_os_error()) } else { Ok(()) });
+        }
     }
     command_output_from_process(command)
 }
