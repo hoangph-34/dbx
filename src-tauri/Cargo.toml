@@ -96,6 +96,9 @@ objc2-foundation = { version = "0.3.2", default-features = false, features = ["N
 libloading = "0.8"
 gtk = "0.18"
 
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
 [target.'cfg(target_os = "windows")'.dependencies]
 # 与 vendored wry / tauri-runtime-wry 同版本（Cargo.lock 只有一份 0.38.x），用于在
 # 快捷键录入态运行时切换 WebView2 的浏览器加速键开关（见 commands/shortcut_recording.rs）。

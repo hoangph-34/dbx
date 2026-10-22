@@ -2161,6 +2161,7 @@ dependencies = [
  "grep",
  "gtk",
  "ignore",
+ "libc",
  "libloading 0.8.9",
  "log",
  "minisign-verify",
